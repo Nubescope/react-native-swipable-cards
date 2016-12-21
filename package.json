@@ -1,0 +1,33 @@
+{
+  "name": "react-native-swipable-cards",
+  "version": "0.0.1",
+  "description": "Swipable cards with different behaviors",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/underscopeio/react-native-swipable-cards.git"
+  },
+  "keywords": [
+    "react-native",
+    "swipable",
+    "swipe",
+    "cards",
+    "tinder",
+    "bumble"
+  ],
+  "author": "Underscope (underscope.io)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/underscopeio/react-native-swipable-cards/issues"
+  },
+  "homepage": "https://github.com/underscopeio/react-native-swipable-cards#readme",
+  "devDependencies": {
+    "eslint": "3.12.2",
+    "eslint-plugin-babel": "4.0.0",
+    "eslint-plugin-react": "6.8.0",
+    "eslint-plugin-react-native": "2.2.1"
+  }
+}
