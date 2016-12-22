@@ -131,7 +131,7 @@ class SwipableCards extends Component {
     return this.props.renderNoMoreCards()
   }
 
-  renderFirstCard(card) {
+  renderFirstCard(card, cardIndex) {
     const { pan, enter } = this.state
 
     const [translateX, translateY] = [pan.x, pan.y]
@@ -148,7 +148,7 @@ class SwipableCards extends Component {
 
     return (
       <Animated.View
-        key={+new Date() + Math.random()}
+        key={cardIndex}
         style={[this.props.cardStyle, animatedCardstyles ]}
         {...this._panResponder.panHandlers}
       >
@@ -157,10 +157,10 @@ class SwipableCards extends Component {
     )
   }
 
-  renderStackCard(card, style) {
+  renderStackCard(card, style, cardIndex) {
     return (
       <Animated.View
-        key={+new Date() + Math.random()}
+        key={cardIndex}
         style={[this.props.cardStyle, style]}
       >
         {this.props.renderCard(card)}
@@ -169,12 +169,16 @@ class SwipableCards extends Component {
   }
 
   renderStack() {
-    let { currentCardIdx } = this.state
-    let cards = this.props.cards.slice(currentCardIdx, currentCardIdx + this.props.stackDepth).reverse()
+    const { currentCardIdx } = this.state
+    const { cards, stackDepth } = this.props
 
-    return cards.map((card, i) => {
-      if (i + 1 === cards.length) {
-        return this.renderFirstCard(card)
+    return Array(stackDepth).fill().map((_, i) => {
+      // Render last card first
+      const cardIndex = currentCardIdx + (stackDepth - 1) - i
+      const card = cards[cardIndex]
+
+      if (cardIndex === currentCardIdx) {
+        return card && this.renderFirstCard(card, cardIndex)
       }
 
       let offsetX = this.props.stackOffsetX * (cards.length - i)
@@ -190,7 +194,7 @@ class SwipableCards extends Component {
         elevation: i * 10
       }
 
-      return this.renderStackCard(card, style)
+      return card && this.renderStackCard(card, style, cardIndex)
     })
   }
 
@@ -207,9 +211,7 @@ class SwipableCards extends Component {
 
     return (
       <View style={this.props.containerStyle}>
-        { this.state.card
-          ? (this.props.stack ? this.renderStack() : this.renderFirstCard(this.state.card))
-            : this.renderNoMoreCards() }
+        { this.state.card ? this.renderStack() : this.renderNoMoreCards() }
 
           { this.props.renderNope
             ? this.props.renderNope(pan)
@@ -252,7 +254,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF'
   },
   yup: {
     borderColor: 'green',
