@@ -3,11 +3,9 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
 } from 'react-native'
 
-//import SwipeCards from 'react-native-swipe-cards'
-import SwipeCards from './swipable-cards'
+import SwipableCards from 'react-native-swipable-cards'
 import ScrollableImages from './swipable-cards/scrollable-images'
 
 const Card = ({ image, name }) =>
@@ -85,7 +83,7 @@ class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <SwipeCards
+        <SwipableCards
           cards={this.state.cards}
           loop={false}
           onlyHorizontal

@@ -9,7 +9,7 @@ class ScrollableImages extends PureComponent {
 
   render() {
     const { style, height = 300, sources = [] } = this.props
-    console.warn('hola!', sources)
+
     return (
         <ScrollView
           //contentContainerStyle={{ flex: 1 }}
