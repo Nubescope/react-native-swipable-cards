@@ -12,10 +12,6 @@ const clamp = (value, min, max) => Math.max(Math.min(min, value), max)
 
 const SWIPE_THRESHOLD = 120
 
-const warn = (...args) => {
-  //console.warn(...args)
-}
-
 class SwipableCards extends Component {
   constructor(props) {
     super(props)
@@ -26,6 +22,10 @@ class SwipableCards extends Component {
       card: this.props.cards[0],
       currentCardIdx: 0,
     }
+  }
+
+  log = (...args) => {
+    this.props.logger(...args)
   }
 
   _goToNextCard() {
@@ -69,8 +69,12 @@ class SwipableCards extends Component {
       Animated.event([ null, {dx: this.state.pan.x, dy: this.state.pan.y} ])
 
     this._panResponder = PanResponder.create({
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return Math.abs(gestureState.dx) > 5
+      onResponderTerminationRequest: () => false,
+      onShouldBlockNativeResponder: () => true,
+      onMoveShouldSetPanResponder: (evt, { dx }) => Math.abs(dx) > 5,
+
+      onPanResponderTerminate: () => {
+        this._backToDeck()
       },
 
       onPanResponderGrant: () => {
@@ -101,18 +105,22 @@ class SwipableCards extends Component {
           Animated.timing(this.state.pan, {
             toValue: { x: velocity * 200, y: vy * 200},
             duration: 200,
-          }).start(this._resetState.bind(this))
+          }).start(this._resetState)
         } else {
-          Animated.spring(this.state.pan, {
-            toValue: {x: 0, y: 0},
-            friction: 4,
-          }).start()
+          this._backToDeck()
         }
       }
     })
   }
 
-  _resetState() {
+  _backToDeck = () => {
+    Animated.spring(this.state.pan, {
+      toValue: {x: 0, y: 0},
+      friction: 4,
+    }).start()
+  }
+
+  _resetState = () => {
     this.state.pan.setValue({x: 0, y: 0})
     this.state.enter.setValue(0)
     this._goToNextCard()
@@ -138,8 +146,6 @@ class SwipableCards extends Component {
       animatedCardstyles.opacity = pan.x.interpolate({inputRange: [-200, 0, 200], outputRange: [0.5, 1, 0.5]})
     }
 
-    warn('RENDER card')
-
     return (
       <Animated.View
         key={+new Date() + Math.random()}
@@ -152,7 +158,6 @@ class SwipableCards extends Component {
   }
 
   renderStackCard(card, style) {
-    warn('RENDER STACK card')
     return (
       <Animated.View
         key={+new Date() + Math.random()}
@@ -185,14 +190,11 @@ class SwipableCards extends Component {
         elevation: i * 10
       }
 
-      warn(`style for ${i}`, { offsetX, offsetY, lastOffsetX, lastOffsetY })
-
       return this.renderStackCard(card, style)
     })
   }
 
   render() {
-    warn('RENDER TOTAL!!!')
     let { pan } = this.state
 
     let yupOpacity = pan.x.interpolate({inputRange: [0, 150], outputRange: [0, 1]})
@@ -215,8 +217,8 @@ class SwipableCards extends Component {
                 this.props.showNope
                 ? (
                   <Animated.View style={[this.props.nopeStyle, animatedNopeStyles]}>
-                      {this.props.noView
-                          ? this.props.noView
+                      {this.props.nopeView
+                          ? this.props.nopeView
                           : <Text style={this.props.nopeTextStyle}>{this.props.nopeText}</Text>
                       }
                   </Animated.View>
@@ -305,7 +307,10 @@ SwipableCards.propTypes = {
   handleNope: React.PropTypes.func,
   onCardRemoved: React.PropTypes.func,
   renderCard: React.PropTypes.func,
+  renderYup: React.PropTypes.func,
+  renderNope: React.PropTypes.func,
   renderNoMoreCards: React.PropTypes.func,
+  logger: React.PropTypes.func,
 }
 
 SwipableCards.defaultProps = {
@@ -328,6 +333,7 @@ SwipableCards.defaultProps = {
   fadeOnSwipe: false,
   renderNoMoreCards: () => <View />,
   onCardRemoved: () => null,
+  logger: () => null,
 }
 
 export default SwipableCards
