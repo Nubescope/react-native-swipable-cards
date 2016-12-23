@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 
 import {
   StyleSheet,
@@ -12,7 +12,7 @@ const clamp = (value, min, max) => Math.max(Math.min(min, value), max)
 
 const SWIPE_THRESHOLD = 120
 
-class SwipableCards extends Component {
+class SwipableCards extends PureComponent {
   constructor(props) {
     super(props)
 
@@ -55,7 +55,7 @@ class SwipableCards extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.cards && nextProps.cards.length > 0) {
+    if (nextProps.cards && nextProps.cards.length > 0 && this.props.cards !== nextProps.cards) {
       this.setState({
         card: nextProps.cards[0],
         currentCardIdx: 0,
@@ -71,7 +71,7 @@ class SwipableCards extends Component {
     this._panResponder = PanResponder.create({
       onResponderTerminationRequest: () => false,
       onShouldBlockNativeResponder: () => true,
-      onMoveShouldSetPanResponder: (evt, { dx }) => Math.abs(dx) > 5,
+      onMoveShouldSetPanResponder: (evt, { dx }) => !this.props.disableGestures && Math.abs(dx) > 5,
 
       onPanResponderTerminate: () => {
         this._backToDeck()
@@ -310,6 +310,7 @@ SwipableCards.propTypes = {
   renderCard: React.PropTypes.func,
   renderYup: React.PropTypes.func,
   renderNope: React.PropTypes.func,
+  disableGestures: React.PropTypes.bool,
   renderNoMoreCards: React.PropTypes.func,
   logger: React.PropTypes.func,
 }
@@ -332,6 +333,7 @@ SwipableCards.defaultProps = {
   stackOffsetX: 0,
   stackOffsetY: 0,
   fadeOnSwipe: false,
+  disableGestures: false,
   renderNoMoreCards: () => <View />,
   onCardRemoved: () => null,
   logger: () => null,
