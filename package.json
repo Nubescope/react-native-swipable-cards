@@ -1,6 +1,6 @@
 {
   "name": "react-native-swipable-cards",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Swipable cards with different behaviors",
   "main": "src/index.js",
   "scripts": {
